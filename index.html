@@ -42,6 +42,36 @@
         filter: blur(30px);
         opacity: 0.8;
       }
+      .formula-layer {
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 60% 35%, rgba(0, 255, 255, 0.04), transparent 45%),
+          radial-gradient(circle at 30% 50%, rgba(255, 0, 255, 0.03), transparent 40%),
+          conic-gradient(from 60deg at 50% 40%, rgba(255, 255, 255, 0.08), transparent 40%);
+        animation: rotateBackground 65s linear infinite;
+        overflow: hidden;
+      }
+      .formula-layer svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.35;
+        mix-blend-mode: screen;
+        animation: driftFormulas 50s linear infinite;
+      }
+      .formula-layer svg text {
+        fill: rgba(255, 255, 255, 0.55);
+        letter-spacing: 0.2em;
+        font-family: "Source Code Pro", "Courier New", monospace;
+      }
+      .formula-layer svg circle,
+      .formula-layer svg path {
+        filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.35));
+      }
       main {
         min-height: 100vh;
         display: flex;
@@ -245,6 +275,8 @@
         align-items: center;
         padding-bottom: 10px;
         box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+        cursor: grab;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
       }
       .tower::after {
         content: "";
@@ -255,6 +287,17 @@
         bottom: 10px;
         left: calc(50% - 2px);
         border-radius: 2px;
+      }
+      .tower:active {
+        cursor: grabbing;
+      }
+      .tower-drag-source {
+        border-color: var(--neon);
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), inset 0 0 35px rgba(255, 255, 255, 0.1);
+      }
+      .tower-drag-target {
+        border-color: var(--accent);
+        box-shadow: 0 0 30px rgba(244, 90, 255, 0.35), inset 0 0 28px rgba(255, 255, 255, 0.08);
       }
       .disk {
         height: 18px;
@@ -315,6 +358,22 @@
         font-size: 0.9rem;
         color: #9ab4ff;
       }
+      @keyframes driftFormulas {
+        0% {
+          transform: translate(0%, 0%);
+        }
+        100% {
+          transform: translate(-15%, -10%);
+        }
+      }
+      @keyframes rotateBackground {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
       @media (max-width: 900px) {
         #fractal {
           grid-template-columns: 1fr;
@@ -328,9 +387,20 @@
     </style>
   </head>
   <body>
+    <div class="formula-layer" aria-hidden="true">
+      <svg viewBox="0 0 720 240" preserveAspectRatio="xMidYMid slice">
+        <text x="20" y="50" font-size="32">∑_{n=1}^∞ 1/n^2 = π^2/6</text>
+        <text x="20" y="100" font-size="32">e^{iπ} + 1 = 0</text>
+        <text x="20" y="150" font-size="26">ζ(s) = ∑_{n=1}^∞ 1/n^s</text>
+        <text x="20" y="200" font-size="26">f(z)=z^2+c ... フラクタル軌跡</text>
+        <circle cx="540" cy="120" r="60" stroke-width="1.5" stroke="rgba(255,255,255,0.25)" fill="none" />
+        <circle cx="600" cy="60" r="32" stroke-width="0.6" stroke="rgba(0,255,255,0.4)" fill="none" />
+        <path d="M420 40 Q 470 20 520 60" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="none" />
+      </svg>
+    </div>
     <main>
       <section class="panel hero">
-        <p class="eyebrow">電脳幾何空間</p>
+        <p class="eyebrow">知の探求</p>
         <h1>幾何学的な装飾と知的な遊び</h1>
         <p>
           こちらは線と光の言語で構成されたミステリアスなインターフェース。幾何学パターンの
@@ -567,6 +637,7 @@
       let towers = [[], [], []];
       let diskCount = parseInt(diskCountInput.value, 10);
       let autoTimer;
+      let dragOrigin = null;
 
       function createDisks(count) {
         const stack = [];
@@ -579,14 +650,16 @@
       function renderHanoi() {
         towerEls.forEach((towerEl) => {
           const idx = Number(towerEl.dataset.index);
-          towerEl.innerHTML = '';
+        towerEl.innerHTML = '';
           const stack = towers[idx];
-          stack.forEach((diskSize) => {
+          const ordered = [...stack].sort((a, b) => a - b);
+          ordered.forEach((diskSize) => {
             const disk = document.createElement('div');
             disk.className = 'disk';
             const widthRatio = (diskSize / diskCount) * 0.7 + 0.3;
             disk.style.width = `${widthRatio * 100}%`;
             disk.style.background = `linear-gradient(90deg, rgba(0,255,255,0.4), rgba(255,0,255,0.4))`;
+            disk.style.order = diskSize;
             towerEl.appendChild(disk);
           });
         });
@@ -597,6 +670,7 @@
       }
 
       function resetHanoi() {
+        clearDragHighlight();
         if (autoTimer) {
           clearInterval(autoTimer);
           autoTimer = null;
@@ -640,6 +714,55 @@
 
       diskCountInput.addEventListener('input', () => {
         diskCountValue.textContent = diskCountInput.value;
+      });
+
+      function clearDragHighlight() {
+        dragOrigin = null;
+        towerEls.forEach((el) => {
+          el.classList.remove('tower-drag-source', 'tower-drag-target');
+        });
+      }
+
+      towerEls.forEach((towerEl) => {
+        towerEl.addEventListener('pointerdown', (event) => {
+          event.preventDefault();
+          const idx = Number(towerEl.dataset.index);
+          if (towers[idx].length === 0) {
+            setMessage('この塔にディスクがありません。');
+            return;
+          }
+          dragOrigin = idx;
+          towerEl.classList.add('tower-drag-source');
+          setMessage(`塔 ${String.fromCharCode(65 + idx)} からドラッグを開始しました。`);
+        });
+        towerEl.addEventListener('pointerenter', () => {
+          if (dragOrigin === null) return;
+          const idx = Number(towerEl.dataset.index);
+          if (idx !== dragOrigin) {
+            towerEl.classList.add('tower-drag-target');
+          }
+        });
+        towerEl.addEventListener('pointerleave', () => {
+          towerEl.classList.remove('tower-drag-target');
+        });
+        towerEl.addEventListener('pointerup', () => {
+          if (dragOrigin === null) return;
+          const target = Number(towerEl.dataset.index);
+          if (target !== dragOrigin) {
+            moveDisk(dragOrigin, target);
+          } else {
+            setMessage('同じ塔には戻せません。');
+          }
+          clearDragHighlight();
+        });
+      });
+
+      document.addEventListener('pointerup', (event) => {
+        if (dragOrigin === null) return;
+        if (!event.target.closest('.tower')) {
+          clearDragHighlight();
+          setMessage('ドラッグをキャンセルしました。');
+        }
       });
 
       moveButton.addEventListener('click', () => {

@@ -201,6 +201,28 @@
         background: repeating-linear-gradient(90deg, transparent 0 20px, rgba(255, 255, 255, 0.04) 21px 40px);
         opacity: 0.4;
       }
+      .constant-history {
+        font-size: 0.95rem;
+        color: #9dbaff;
+        margin: 0;
+        line-height: 1.5;
+      }
+      .constant-digits {
+        font-family: "Source Code Pro", "Courier New", monospace;
+        font-size: 1rem;
+        letter-spacing: 0.18em;
+        color: #cce8ff;
+        background: rgba(4, 10, 28, 0.9);
+        border-radius: 14px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        min-height: 210px;
+        max-height: 240px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.45);
+      }
       .constants-display {
         position: relative;
         display: grid;
@@ -425,6 +447,20 @@
           <div class="fractal-grid">
             <div class="control-row">
               <label>
+                フラクタルタイプ
+                <select id="fractalType">
+                  <option value="tree">枝分かれの森</option>
+                  <option value="triangle">シェルピンスキーの三角形</option>
+                  <option value="spiral">渦巻く黄金スパイラル</option>
+                </select>
+              </label>
+              <label>
+                線の色
+                <input type="color" id="branchColor" value="#00ffff" />
+              </label>
+            </div>
+            <div class="control-row">
+              <label>
                 深さ <span id="depthValue">6</span>
                 <input type="range" id="depthRange" min="3" max="8" value="6" />
               </label>
@@ -439,11 +475,10 @@
                 <input type="range" id="scaleRange" min="50" max="85" value="70" />
               </label>
               <label>
-                線の色
-                <input type="color" id="branchColor" value="#00ffff" />
+                枝の数 <span id="branchCountValue">3</span>
+                <input type="range" id="branchFactorRange" min="2" max="5" value="3" />
               </label>
             </div>
-            <button class="primary" id="drawFractalBtn">生成</button>
           </div>
         </div>
         <canvas id="fractalCanvas" width="800" height="600"></canvas>
@@ -458,11 +493,25 @@
         <div class="constants-display">
           <article class="constant-card">
             <h3>π (Pi)</h3>
-            <p id="piDigits"></p>
+            <p class="constant-history">
+              紀元前2000年ごろ、バビロニアとエジプトの数学者たちが円の周りを測り、古代の近似値を発見しました。
+              アルキメデスは正多角形で内接・外接してπの上下限を導き、無限の理想へと探査を広げました。
+            </p>
+            <p class="constant-history">
+              以降も文化を超えてπは天文学や物理学に浸透し、計算の歴史は桁数を追い求める旅へと続きます。
+            </p>
+            <pre class="constant-digits" id="piDigits" aria-label="円周率の桁"></pre>
           </article>
           <article class="constant-card">
             <h3>e (ネイピア数)</h3>
-            <p id="eDigits"></p>
+            <p class="constant-history">
+              ジョン・ネイピア（1550-1617）は自然対数の概念とともに、この成長率の定数を提示しました。
+              その後、解析学者たちは微分積分や連続複利の裏側にeを見出し、数学の軸に据えました。
+            </p>
+            <p class="constant-history">
+              現代ではオイラーの公式や無限級数として鮮烈な姿を見せ、虚数単位と美しく結びついています。
+            </p>
+            <pre class="constant-digits" id="eDigits" aria-label="ネイピア数の桁"></pre>
           </article>
         </div>
       </section>
@@ -531,17 +580,39 @@
       const depthRange = document.getElementById('depthRange');
       const angleRange = document.getElementById('angleRange');
       const scaleRange = document.getElementById('scaleRange');
+      const branchFactorRange = document.getElementById('branchFactorRange');
       const depthValue = document.getElementById('depthValue');
       const angleValue = document.getElementById('angleValue');
       const scaleValue = document.getElementById('scaleValue');
+      const branchCountValue = document.getElementById('branchCountValue');
       const branchColor = document.getElementById('branchColor');
+      const fractalTypeSelect = document.getElementById('fractalType');
       const fractalCanvas = document.getElementById('fractalCanvas');
       const ctx = fractalCanvas.getContext('2d');
 
-      function syncRangeLabels() {
+      const piDigits =
+        '3.14159265358979323846264338327950288419716939937510'
+        + '58209749445923078164062862089986280348253421170679';
+      const eDigits =
+        '2.71828182845904523536028747135266249775724709369995'
+        + '95749669676277240766303535475945713821785251664274';
+      const piDisplay = document.getElementById('piDigits');
+      const eDisplay = document.getElementById('eDigits');
+
+      function formatConstantDigits(str) {
+        const groupSize = 60;
+        const groups = [];
+        for (let i = 0; i < str.length; i += groupSize) {
+          groups.push(str.slice(i, i + groupSize));
+        }
+        return groups.join('\n');
+      }
+
+      function updateControlLabels() {
         depthValue.textContent = depthRange.value;
-        angleValue.textContent = angleRange.value + '°';
-        scaleValue.textContent = scaleRange.value + '%';
+        angleValue.textContent = `${angleRange.value}°`;
+        scaleValue.textContent = `${scaleRange.value}%`;
+        branchCountValue.textContent = branchFactorRange.value;
       }
 
       function resizeCanvas() {
@@ -551,21 +622,113 @@
         ctx.setTransform(1, 0, 0, 1, 0, 0);
       }
 
-      function drawBranch(x, y, length, angle, depth) {
-        if (depth === 0) return;
+      function drawBranch(ctx, x, y, length, angle, depth, opts) {
+        if (depth === 0 || length < 2) return;
         const x2 = x + Math.cos(angle) * length;
         const y2 = y + Math.sin(angle) * length;
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x2, y2);
-        ctx.lineWidth = Math.max(1, depth * 1.25);
-        ctx.strokeStyle = branchColor.value;
+        ctx.lineWidth = Math.max(1, depth * 1.4);
+        ctx.strokeStyle = opts.color;
         ctx.stroke();
-        const nextLength = length * (scaleRange.value / 100);
-        const branchAngle = (angleRange.value * Math.PI) / 180;
-        drawBranch(x2, y2, nextLength, angle - branchAngle, depth - 1);
-        drawBranch(x2, y2, nextLength, angle + branchAngle, depth - 1);
+        const nextLength = length * (opts.scale * 0.92);
+        const children = Math.max(2, opts.branchFactor);
+        const baseSpread = opts.branchSpread;
+        for (let i = 0; i < children; i += 1) {
+          const offset = children === 1 ? 0 : (i / (children - 1) - 0.5);
+          const jitter = Math.sin(depth * 0.45 + i) * 0.07;
+          const subAngle = angle + offset * baseSpread + offset * jitter;
+          drawBranch(ctx, x2, y2, nextLength, subAngle, depth - 1, opts);
+        }
       }
+
+      function drawBinaryTree(ctx, opts) {
+        ctx.save();
+        ctx.translate(opts.width / 2, opts.height * 0.9);
+        drawBranch(ctx, 0, 0, opts.height * 0.25 * opts.scale, -Math.PI / 2, opts.depth, opts);
+        ctx.restore();
+      }
+
+      function midpoint(p1, p2) {
+        return {
+          x: (p1.x + p2.x) / 2,
+          y: (p1.y + p2.y) / 2,
+        };
+      }
+
+      function rotatePoint(x, y, cx, cy, angle) {
+        const dx = x - cx;
+        const dy = y - cy;
+        return {
+          x: cx + dx * Math.cos(angle) - dy * Math.sin(angle),
+          y: cy + dx * Math.sin(angle) + dy * Math.cos(angle),
+        };
+      }
+
+      function drawSierpinskiTriangle(ctx, points, depth) {
+        if (depth === 0) {
+          ctx.beginPath();
+          ctx.moveTo(points[0].x, points[0].y);
+          ctx.lineTo(points[1].x, points[1].y);
+          ctx.lineTo(points[2].x, points[2].y);
+          ctx.closePath();
+          ctx.fill();
+          return;
+        }
+        const [a, b, c] = points;
+        const ab = midpoint(a, b);
+        const bc = midpoint(b, c);
+        const ac = midpoint(a, c);
+        drawSierpinskiTriangle(ctx, [a, ab, ac], depth - 1);
+        drawSierpinskiTriangle(ctx, [ab, b, bc], depth - 1);
+        drawSierpinskiTriangle(ctx, [ac, bc, c], depth - 1);
+      }
+
+      function drawSierpinski(ctx, opts) {
+        const { width, height, depth, color, scale, bias } = opts;
+        const centerX = width / 2;
+        const centerY = height * 0.55;
+        const radius = Math.min(width, height) * (0.25 + scale * 0.22);
+        const points = [
+          { x: centerX, y: centerY - radius },
+          { x: centerX - radius, y: centerY + radius },
+          { x: centerX + radius, y: centerY + radius },
+        ].map((point) => rotatePoint(point.x, point.y, centerX, centerY, bias * 0.65));
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.5;
+        drawSierpinskiTriangle(ctx, points, Math.min(depth, 8));
+        ctx.globalAlpha = 1;
+      }
+
+      function drawSpiral(ctx, opts) {
+        const { width, height, depth, scale, color, sliderAngle, branchFactor } = opts;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.4;
+        let x = width / 2;
+        let y = height / 2;
+        let length = Math.min(width, height) * (0.25 + scale * 0.3);
+        let currentAngle = sliderAngle;
+        const steps = depth * 10 + branchFactor * 4;
+        for (let step = 0; step < steps && length > 3; step += 1) {
+          const nextX = x + Math.cos(currentAngle) * length;
+          const nextY = y + Math.sin(currentAngle) * length;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(nextX, nextY);
+          ctx.stroke();
+          x = nextX;
+          y = nextY;
+          length *= 0.92;
+          currentAngle += (Math.PI / (22 + step)) + (branchFactor * 0.02) + Math.sin(step * 0.2) * 0.04;
+        }
+      }
+
+      const fractalDrawers = {
+        tree: drawBinaryTree,
+        triangle: drawSierpinski,
+        spiral: drawSpiral,
+      };
 
       function renderFractal() {
         const width = fractalCanvas.width;
@@ -574,55 +737,55 @@
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = 'rgba(1, 2, 5, 0.65)';
         ctx.fillRect(0, 0, width, height);
-        ctx.translate(width / 2, height * 0.9);
-        const initialLength = height * 0.25;
-        drawBranch(0, 0, initialLength, -Math.PI / 2, parseInt(depthRange.value, 10));
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        const scaleFactor = Math.max(0.2, parseFloat(scaleRange.value) / 100);
+        const branchFactor = parseInt(branchFactorRange.value, 10);
+        const branchSpread = Math.PI * (0.35 + branchFactor * 0.08);
+        const sliderAngle = (parseInt(angleRange.value, 10) * Math.PI) / 180;
+        const depthValueInput = parseInt(depthRange.value, 10);
+        const fractalType = fractalTypeSelect.value;
+        const options = {
+          width,
+          height,
+          depth: fractalType === 'triangle' ? Math.min(depthValueInput, 7) : depthValueInput,
+          scale: scaleFactor,
+          color: branchColor.value,
+          sliderAngle,
+          branchFactor,
+          branchSpread,
+          bias: Math.cos(branchFactor * 0.35),
+        };
+        fractalDrawers[fractalType](ctx, options);
       }
 
-      function initializeFractal() {
-        syncRangeLabels();
-        resizeCanvas();
-        renderFractal();
-      }
+      const controlElements = [
+        depthRange,
+        angleRange,
+        scaleRange,
+        branchFactorRange,
+        fractalTypeSelect,
+      ];
+
+      controlElements.forEach((element) => {
+        element.addEventListener('input', () => {
+          updateControlLabels();
+          renderFractal();
+        });
+      });
+
+      branchColor.addEventListener('input', renderFractal);
 
       window.addEventListener('resize', () => {
         resizeCanvas();
         renderFractal();
       });
 
-      depthRange.addEventListener('input', () => {
-        syncRangeLabels();
-      });
-      angleRange.addEventListener('input', () => {
-        syncRangeLabels();
-      });
-      scaleRange.addEventListener('input', () => {
-        syncRangeLabels();
-      });
-
-      document.getElementById('drawFractalBtn').addEventListener('click', () => {
-        renderFractal();
-      });
-
-      // Constants display
-      const piDigits =
-        '3.14159265358979323846264338327950288419716939937510'
-        + '58209749445923078164062862089986280348253421170679';
-      const eDigits =
-        '2.71828182845904523536028747135266249775724709369995'
-        + '95749669676277240766303535475945713821785251664274';
-
-      function chunkDigits(str) {
-        const chunkSize = 20;
-        const chunks = [];
-        for (let i = 0; i < str.length; i += chunkSize) {
-          chunks.push(str.slice(i, i + chunkSize));
-        }
-        return chunks.join('\n');
-      }
-
-      document.getElementById('piDigits').textContent = chunkDigits(piDigits);
-      document.getElementById('eDigits').textContent = chunkDigits(eDigits);
+      piDisplay.textContent = formatConstantDigits(piDigits);
+      eDisplay.textContent = formatConstantDigits(eDigits);
+      updateControlLabels();
+      resizeCanvas();
+      renderFractal();
 
       // Hanoi towers
       const diskCountInput = document.getElementById('diskCount');
@@ -651,8 +814,8 @@
         towerEls.forEach((towerEl) => {
           const idx = Number(towerEl.dataset.index);
         towerEl.innerHTML = '';
-          const stack = towers[idx];
-          const ordered = [...stack].sort((a, b) => a - b);
+          const stack = towers[idx] || [];
+          const ordered = [...stack].sort((a, b) => b - a);
           ordered.forEach((diskSize) => {
             const disk = document.createElement('div');
             disk.className = 'disk';

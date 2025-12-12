@@ -137,8 +137,67 @@
       }
       #fractal {
         display: grid;
-        grid-template-columns: minmax(0, 360px) 1fr;
-        gap: 2rem;
+        grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+        gap: clamp(1.5rem, 3vw, 2.75rem);
+      }
+      .toc-panel {
+        display: grid;
+        gap: 1.5rem;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 0.75rem;
+      }
+      .toc-card {
+        position: relative;
+        border-radius: 18px;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        cursor: pointer;
+        overflow: hidden;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+      }
+      .toc-card:hover {
+        border-color: rgba(0, 255, 255, 0.6);
+        transform: translateY(-4px);
+      }
+      .toc-card span {
+        display: block;
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(204, 232, 255, 0.6);
+      }
+      .toc-card strong {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 1rem;
+      }
+      .toc-input {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .toc-dots {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+        margin-top: 0.75rem;
+      }
+      .toc-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(0, 255, 255, 0.4);
+        box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.4);
+        transition: transform 0.2s ease;
+      }
+      .toc-card:hover .toc-dot {
+        transform: scale(1.2);
       }
       .fractal-info {
         display: flex;
@@ -174,7 +233,7 @@
       }
       canvas {
         width: 100%;
-        height: 420px;
+        height: clamp(480px, 55vw, 660px);
         border-radius: 18px;
         background: rgba(3, 6, 15, 0.85);
         box-shadow: inset 0 0 40px rgba(0, 255, 255, 0.08);
@@ -410,6 +469,13 @@
         gap: 0;
         box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7), 0 30px 50px rgba(5, 8, 25, 0.7);
       }
+      #circleOverlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        width: 100%;
+        height: 100%;
+      }
       .circle-cell {
         border: none;
         background: transparent;
@@ -570,6 +636,67 @@
         </div>
       </section>
 
+      <section class="panel toc-panel">
+        <div>
+          <h2>目次</h2>
+          <p>各セクションへ格子状に配置したドットを選んで移動します。円状のゲームもここからすぐに。</p>
+        </div>
+        <div class="toc-grid">
+          <label class="toc-card">
+            <input class="toc-input" type="button" data-target="fractal" />
+            <span>フラクタル</span>
+            <strong>幾何学模様</strong>
+            <div class="toc-dots">
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+            </div>
+          </label>
+          <label class="toc-card">
+            <input class="toc-input" type="button" data-target="constants" />
+            <span>定数群</span>
+            <strong>π と e</strong>
+            <div class="toc-dots">
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+            </div>
+          </label>
+          <label class="toc-card">
+            <input class="toc-input" type="button" data-target="hanoi" />
+            <span>論理遊び</span>
+            <strong>ハノイの塔</strong>
+            <div class="toc-dots">
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+            </div>
+          </label>
+          <label class="toc-card">
+            <input class="toc-input" type="button" data-target="circleGame" />
+            <span>円状ゲーム</span>
+            <strong>4点を避ける</strong>
+            <div class="toc-dots">
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+            </div>
+          </label>
+        </div>
+      </section>
+
       <section id="fractal" class="panel">
         <div class="fractal-info">
           <div>
@@ -709,7 +836,9 @@
           4点目を置くと失敗。AIは対戦の結果を蓄積しながら、ユーザーの選択を学習していきます。
         </p>
         <div class="circle-game">
-          <div id="circleBoard" class="circle-board" role="grid" aria-label="円を避けるゲームの碁盤"></div>
+          <div id="circleBoard" class="circle-board" role="grid" aria-label="円を避けるゲームの碁盤">
+            <svg id="circleOverlay" viewBox="0 0 9 9" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+          </div>
           <div class="circle-game-info">
             <div class="circle-scoreboard">
               <div>
@@ -747,13 +876,18 @@
     </main>
 
     <script>
-      // Hero mode buttons scroll to sections
-      document.querySelectorAll('.mode-button').forEach((button) => {
-        button.addEventListener('click', () => {
-          const targetId = button.getAttribute('data-target');
-          document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+      // Hero mode buttons & table-of-contents dots scroll to sections
+      function installScrollLinks(selector) {
+        document.querySelectorAll(selector).forEach((button) => {
+          button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+          });
         });
-      });
+      }
+
+      installScrollLinks('.mode-button');
+      installScrollLinks('.toc-input');
 
       const depthRange = document.getElementById('depthRange');
       const angleRange = document.getElementById('angleRange');
@@ -767,6 +901,16 @@
       const fractalTypeSelect = document.getElementById('fractalType');
       const fractalCanvas = document.getElementById('fractalCanvas');
       const ctx = fractalCanvas.getContext('2d');
+
+      const fractalMotion = {
+        currentX: 0,
+        currentY: 0,
+        currentRotation: 0,
+        targetX: 0,
+        targetY: 0,
+        targetRotation: 0,
+      };
+      let fractalAnimationId;
 
       const piDigits =
         '3.14159265358979323846264338327950288419716939937510'
@@ -791,6 +935,25 @@
         angleValue.textContent = `${angleRange.value}°`;
         scaleValue.textContent = `${scaleRange.value}%`;
         branchCountValue.textContent = branchFactorRange.value;
+      }
+
+      function updateMotionTargets() {
+        const scaleNorm = parseFloat(scaleRange.value) / 100;
+        const angleInput = parseInt(angleRange.value, 10);
+        const branchFactor = parseInt(branchFactorRange.value, 10);
+        const fractalType = fractalTypeSelect.value;
+        const typeBias = fractalType === 'spiral' ? 1.3 : fractalType === 'triangle' ? 1.0 : 0.75;
+        fractalMotion.targetX = (scaleNorm - 0.63) * 210 * typeBias;
+        fractalMotion.targetY = (angleInput - 32) * 1.15 * typeBias;
+        fractalMotion.targetRotation = (branchFactor - 3) * 0.018 * typeBias;
+      }
+
+      function advanceMotion() {
+        const smoothing = 0.08;
+        fractalMotion.currentX += (fractalMotion.targetX - fractalMotion.currentX) * smoothing;
+        fractalMotion.currentY += (fractalMotion.targetY - fractalMotion.currentY) * smoothing;
+        fractalMotion.currentRotation +=
+          (fractalMotion.targetRotation - fractalMotion.currentRotation) * smoothing;
       }
 
       function resizeCanvas() {
@@ -822,8 +985,13 @@
       }
 
       function drawBinaryTree(ctx, opts) {
+        const motion = opts.motion || {};
+        const offsetX = motion.x || 0;
+        const offsetY = motion.y || 0;
+        const rotation = motion.rotation || 0;
         ctx.save();
-        ctx.translate(opts.width / 2, opts.height * 0.9);
+        ctx.translate(opts.width / 2 + offsetX, opts.height * 0.9 + offsetY);
+        ctx.rotate(rotation);
         drawBranch(ctx, 0, 0, opts.height * 0.25 * opts.scale, -Math.PI / 2, opts.depth, opts);
         ctx.restore();
       }
@@ -865,32 +1033,50 @@
 
       function drawSierpinski(ctx, opts) {
         const { width, height, depth, color, scale, bias } = opts;
-        const centerX = width / 2;
-        const centerY = height * 0.55;
+        const motion = opts.motion || {};
+        const offsetX = motion.x || 0;
+        const offsetY = motion.y || 0;
+        const rotation = motion.rotation || 0;
         const radius = Math.min(width, height) * (0.25 + scale * 0.22);
         const points = [
-          { x: centerX, y: centerY - radius },
-          { x: centerX - radius, y: centerY + radius },
-          { x: centerX + radius, y: centerY + radius },
-        ].map((point) => rotatePoint(point.x, point.y, centerX, centerY, bias * 0.65));
+          { x: 0, y: -radius },
+          { x: -radius, y: radius },
+          { x: radius, y: radius },
+        ].map((point) => rotatePoint(point.x, point.y, 0, 0, bias * 0.65));
+        ctx.save();
+        ctx.translate(width / 2 + offsetX, height * 0.55 + offsetY);
+        ctx.rotate(rotation);
         ctx.fillStyle = color;
         ctx.globalAlpha = 0.5;
         drawSierpinskiTriangle(ctx, points, Math.min(depth, 8));
-        ctx.globalAlpha = 1;
+        ctx.restore();
       }
 
       function drawSpiral(ctx, opts) {
         const { width, height, depth, scale, color, sliderAngle, branchFactor } = opts;
+        const motion = opts.motion || {};
+        const offsetX = motion.x || 0;
+        const offsetY = motion.y || 0;
+        const rotation = motion.rotation || 0;
+        ctx.save();
+        ctx.translate(width / 2 + offsetX, height / 2 + offsetY);
+        ctx.rotate(rotation);
         ctx.strokeStyle = color;
         ctx.lineWidth = 2.2;
         const previousShadowBlur = ctx.shadowBlur;
         const previousShadowColor = ctx.shadowColor;
         ctx.shadowBlur = 16;
         ctx.shadowColor = color;
-        let x = width / 2;
-        let y = height / 2;
-        let length = Math.min(width, height) * (0.25 + scale * 0.3);
+        let x = 0;
+        let y = 0;
+        const margin = Math.min(width, height) * 0.08;
+        const maxLength = Math.max(
+          22,
+          Math.min(width, height) * (0.38 + Math.min(scale, 0.75) * 0.25) - margin
+        );
+        let length = maxLength;
         let currentAngle = sliderAngle;
+        const shrink = 0.915 - Math.min(scale, 0.7) * 0.12;
         const steps = depth * 10 + branchFactor * 4;
         for (let step = 0; step < steps && length > 3; step += 1) {
           const nextX = x + Math.cos(currentAngle) * length;
@@ -901,11 +1087,17 @@
           ctx.stroke();
           x = nextX;
           y = nextY;
-          length *= 0.92;
-          currentAngle += (Math.PI / (22 + step)) + (branchFactor * 0.02) + Math.sin(step * 0.2) * 0.04;
+          length *= shrink;
+          currentAngle +=
+            (Math.PI / (22 + step)) + (branchFactor * 0.02) + Math.sin(step * 0.2) * 0.04;
+          if (Math.abs(x) > width / 2 - margin || Math.abs(y) > height / 2 - margin) {
+            length *= 0.85;
+            currentAngle += 0.08;
+          }
         }
         ctx.shadowBlur = previousShadowBlur;
         ctx.shadowColor = previousShadowColor;
+        ctx.restore();
       }
 
       const fractalDrawers = {
@@ -923,6 +1115,7 @@
         ctx.fillRect(0, 0, width, height);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
+        advanceMotion();
         const scaleFactor = Math.max(0.2, parseFloat(scaleRange.value) / 100);
         const branchFactor = parseInt(branchFactorRange.value, 10);
         const branchSpread = Math.PI * (0.35 + branchFactor * 0.08);
@@ -939,12 +1132,29 @@
           branchFactor,
           branchSpread,
           bias: Math.cos(branchFactor * 0.35),
+          motion: {
+            x: fractalMotion.currentX,
+            y: fractalMotion.currentY,
+            rotation: fractalMotion.currentRotation,
+          },
         };
         fractalDrawers[fractalType](ctx, options);
       }
 
+      function startFractalLoop() {
+        if (fractalAnimationId) {
+          cancelAnimationFrame(fractalAnimationId);
+        }
+        const loop = () => {
+          renderFractal();
+          fractalAnimationId = requestAnimationFrame(loop);
+        };
+        fractalAnimationId = requestAnimationFrame(loop);
+      }
+
       function initializeFractal() {
         updateControlLabels();
+        updateMotionTargets();
         resizeCanvas();
         renderFractal();
       }
@@ -960,6 +1170,7 @@
       controlElements.forEach((element) => {
         element.addEventListener('input', () => {
           updateControlLabels();
+          updateMotionTargets();
           renderFractal();
         });
       });
@@ -974,6 +1185,7 @@
       piDisplay.textContent = formatConstantDigits(piDigits);
       eDisplay.textContent = formatConstantDigits(eDigits);
       initializeFractal();
+      startFractalLoop();
 
       // Hanoi towers
       const diskCountInput = document.getElementById('diskCount');
@@ -1158,6 +1370,7 @@
       const circleDrawsEl = document.getElementById('circleDraws');
       const circleFirstPlayer = document.getElementById('circleFirstPlayer');
       const circleResetButton = document.getElementById('circleReset');
+      const circleOverlay = document.getElementById('circleOverlay');
       const circleBoardSize = 9;
       const circleCells = [];
       let circleBoardState = [];
@@ -1259,6 +1472,49 @@
             cell.classList.toggle('circle-cell--last', Boolean(isLast));
           });
         });
+        updateCircleOverlay();
+      }
+
+      function updateCircleOverlay() {
+        if (!circleOverlay) return;
+        const points = [];
+        for (let r = 0; r < circleBoardSize; r += 1) {
+          for (let c = 0; c < circleBoardSize; c += 1) {
+            if (circleBoardState[r][c]) {
+              points.push({ x: c, y: r });
+            }
+          }
+        }
+        if (points.length < 3) {
+          circleOverlay.innerHTML = '';
+          return;
+        }
+        const seen = new Set();
+        const circles = [];
+        outer: for (let i = 0; i < points.length - 2; i += 1) {
+          for (let j = i + 1; j < points.length - 1; j += 1) {
+            for (let k = j + 1; k < points.length; k += 1) {
+              const circle = computeCircle(points[i], points[j], points[k]);
+              if (!circle) continue;
+              if (circle.radius > circleBoardSize * 1.5) continue;
+              const key = `${circle.center.x.toFixed(2)}|${circle.center.y.toFixed(2)}|${circle.radius.toFixed(2)}`;
+              if (seen.has(key)) continue;
+              seen.add(key);
+              circles.push(circle);
+              if (circles.length >= 6) {
+                break outer;
+              }
+            }
+          }
+        }
+        circleOverlay.innerHTML = circles
+          .map(
+            (circle) =>
+              `<circle cx="${(circle.center.x + 0.5).toFixed(3)}" cy="${(
+                circle.center.y + 0.5
+              ).toFixed(3)}" r="${circle.radius.toFixed(3)}" stroke="rgba(255,255,255,0.6)" stroke-width="0.04" fill="none" />`
+          )
+          .join('');
       }
 
       function isBoardFull() {

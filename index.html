@@ -694,6 +694,378 @@
         color: rgba(255, 255, 255, 0.7);
         margin: 0;
       }
+      #calcGrid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .calc-grid-body {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      .calc-grid-board {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 6px;
+        width: min(720px, 100%);
+        aspect-ratio: 12 / 10;
+        padding: 1rem;
+        border-radius: 20px;
+        background: radial-gradient(circle at 30% 20%, rgba(0, 255, 255, 0.08), transparent 60%),
+          rgba(3, 8, 22, 0.9);
+        box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.7);
+      }
+      .calc-grid-board button {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        color: inherit;
+        font-weight: 600;
+        font-size: 0.9rem;
+        font-family: "Source Code Pro", "Courier New", monospace;
+        cursor: pointer;
+        transition: transform 0.1s ease, border-color 0.2s ease, background 0.2s ease;
+      }
+      .calc-grid-board button:active {
+        transform: translateY(1px);
+      }
+      .calc-grid-board button:focus-visible {
+        outline: 2px solid var(--neon);
+        outline-offset: 2px;
+      }
+      .calc-cell-start {
+        background: rgba(120, 200, 140, 0.45);
+        border-color: rgba(120, 200, 140, 0.9);
+      }
+      .calc-cell-path {
+        background: rgba(120, 140, 255, 0.35);
+        border-color: rgba(120, 140, 255, 0.8);
+      }
+      .calc-cell-best {
+        background: rgba(255, 150, 150, 0.35);
+        border-color: rgba(255, 150, 150, 0.8);
+      }
+      .calc-grid-sidebar {
+        flex: 1;
+        min-width: 260px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .calc-grid-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+      }
+      .calc-stat-card {
+        padding: 0.9rem;
+        border-radius: 14px;
+        background: rgba(4, 12, 30, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .calc-stat-card strong {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+      }
+      .calc-stat-card span {
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: #f8fbff;
+      }
+      .calc-grid-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .calc-grid-controls button {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 0.6rem 1.4rem;
+        background: rgba(255, 255, 255, 0.04);
+        color: inherit;
+        cursor: pointer;
+        font-weight: 500;
+        transition: border-color 0.2s ease, transform 0.15s ease;
+      }
+      .calc-grid-controls button:hover:not(:disabled) {
+        border-color: rgba(0, 255, 255, 0.6);
+        transform: translateY(-2px);
+      }
+      .calc-grid-controls button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .calc-grid-message {
+        min-height: 2.2rem;
+        margin: 0;
+        font-size: 0.95rem;
+        color: #c7ddff;
+      }
+      .calc-grid-alert {
+        padding: 0.75rem 1rem;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.9rem;
+        color: #ffbcca;
+      }
+      .calc-grid-legend {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .calc-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .calc-legend-box {
+        width: 16px;
+        height: 16px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+      .calc-legend-start {
+        background: rgba(120, 200, 140, 0.6);
+        border-color: rgba(120, 200, 140, 0.9);
+      }
+      .calc-legend-path {
+        background: rgba(120, 140, 255, 0.5);
+        border-color: rgba(120, 140, 255, 0.8);
+      }
+      .calc-legend-best {
+        background: rgba(255, 150, 150, 0.5);
+        border-color: rgba(255, 150, 150, 0.8);
+      }
+      .calc-grid-history {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .calc-history-section {
+        padding: 0.9rem 1rem;
+        border-radius: 16px;
+        background: rgba(6, 14, 32, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .calc-history-title {
+        display: block;
+        font-size: 0.8rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 0.4rem;
+      }
+      .calc-history-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-height: 180px;
+        overflow-y: auto;
+        font-family: "Source Code Pro", "Courier New", monospace;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .calc-history-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.35rem 0.4rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .calc-history-empty {
+        color: rgba(255, 255, 255, 0.5);
+        font-style: italic;
+        justify-content: flex-start;
+      }
+      #aliquot {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .aliquot-body {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      .aliquot-animation {
+        flex: 1;
+        min-width: 280px;
+        border-radius: 20px;
+        padding: 1.25rem;
+        background: radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.08), transparent 60%),
+          rgba(6, 12, 32, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .aliquot-orbit {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        min-height: 120px;
+      }
+      .aliquot-node {
+        position: relative;
+        padding: 0.75rem 1rem;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        min-width: 82px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #f7fcff;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .aliquot-node::after {
+        content: "→";
+        position: absolute;
+        right: -0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .aliquot-node:last-child::after {
+        display: none;
+      }
+      .aliquot-node--active {
+        border-color: var(--neon);
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.35);
+        transform: translateY(-4px);
+      }
+      .aliquot-explanation {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 16px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .aliquot-explanation p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #cde7ff;
+      }
+      .aliquot-divisors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-family: "Source Code Pro", "Courier New", monospace;
+        font-size: 0.9rem;
+      }
+      .aliquot-divisors li {
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+        background: rgba(0, 255, 255, 0.08);
+      }
+      .aliquot-controls {
+        flex: 1;
+        min-width: 280px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .aliquot-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: flex-end;
+      }
+      .aliquot-form label {
+        flex: 1;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        color: #bcd5ff;
+      }
+      .aliquot-form input {
+        appearance: none;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.04);
+        color: inherit;
+        padding: 0.65rem 0.75rem;
+        font-size: 1rem;
+      }
+      .aliquot-form button {
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+        color: inherit;
+        padding: 0.65rem 1.4rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+      }
+      .aliquot-form button:hover:not(:disabled) {
+        border-color: rgba(0, 255, 255, 0.6);
+        transform: translateY(-2px);
+      }
+      .aliquot-status {
+        min-height: 2rem;
+        font-size: 0.95rem;
+        color: #d7ecff;
+      }
+      .aliquot-sequence {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+      .aliquot-sequence h3 {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .aliquot-sequence-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        font-family: "Source Code Pro", "Courier New", monospace;
+        font-size: 0.95rem;
+      }
+      .aliquot-sequence-list li {
+        padding: 0.3rem 0.5rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .aliquot-sequence-list li[data-cycle="true"] {
+        background: rgba(255, 0, 255, 0.12);
+        border: 1px solid rgba(255, 0, 255, 0.35);
+      }
+      .aliquot-replay {
+        align-self: flex-start;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.7rem 1.6rem;
+        background: rgba(0, 255, 255, 0.08);
+        color: inherit;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .aliquot-replay:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
       @keyframes driftFormulas {
         0% {
           transform: translate(0%, 0%);
@@ -881,6 +1253,32 @@
               <span class="toc-dot"></span>
             </div>
           </label>
+          <label class="toc-card">
+            <input class="toc-input" type="button" data-target="calcGrid" />
+            <span>計算マス</span>
+            <strong>数値探索</strong>
+            <div class="toc-dots">
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+            </div>
+          </label>
+          <label class="toc-card">
+            <input class="toc-input" type="button" data-target="aliquot" />
+            <span>数論遊戯</span>
+            <strong>アリコット列</strong>
+            <div class="toc-dots">
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+              <span class="toc-dot"></span>
+            </div>
+          </label>
         </div>
       </section>
 
@@ -943,22 +1341,40 @@
           <article class="constant-card">
             <h3>π (Pi)</h3>
             <p class="constant-history">
-              紀元前2000年ごろ、バビロニアとエジプトの数学者たちが円の周りを測り、古代の近似値を発見しました。
-              アルキメデスは正多角形で内接・外接してπの上下限を導き、無限の理想へと探査を広げました。
+              計測の始まりは古代に遡り、バビロニアやエジプトでは円周と直径の比に関する簡易な分数が実務に使われました。
+              アルキメデスは多角形の内接・外接の周を押し広げる方法でπの上下限を掴み、極限と無限の世界へと橋を架けたのです。
             </p>
             <p class="constant-history">
-              以降も文化を超えてπは天文学や物理学に浸透し、計算の歴史は桁数を追い求める旅へと続きます。
+              中国の祖沖之（そちゅうし）が後にπを355/113まで精密に記し、インドやアラビアの数学者たちは双曲線や三角関数の級数を通じて新しい収束式を発見しました。
+              近代ではライプニッツ級数、ヴァイエルシュトラスの乗法分解、ラムジー＝ナイキストの正規分布との結びつきなど、多様な視座からπを追跡しています。
+            </p>
+            <p class="constant-history">
+              計算機科学の進化とともに、Gauss–Legendre や Chudnovsky らの高速収束アルゴリズムが開発され、現在では何兆桁ものπが記録されています。
+              空間の測定、信号処理、波の解析ではいまだにこの比率があらゆる周回の周期と調和を支えており、再帰的な収束がその美しさを示します。
+            </p>
+            <p class="constant-history">
+              さらに、確率論での円周率はガウス積分やブラウン運動の分布にも現れ、量子場理論の中で真空の揺らぎがπと対話します。
+              そのため「πの深さ」を語る度に、古代から量子の時代まで、思考の螺旋が広がっていきます。
             </p>
             <pre class="constant-digits" id="piDigits" aria-label="円周率の桁"></pre>
           </article>
           <article class="constant-card">
             <h3>e (ネイピア数)</h3>
             <p class="constant-history">
-              ジョン・ネイピア（1550-1617）は自然対数の概念とともに、この成長率の定数を提示しました。
-              その後、解析学者たちは微分積分や連続複利の裏側にeを見出し、数学の軸に据えました。
+              ジョン・ネイピアは坐標の間の「成長はどこまで進むのか」を計るために自然対数を導入し、そこから達したのがeという自然な拡張です。
+              つまり、1を連続的に複利計算したときの極限としてeが現れ、複利の「次の刻」へと滑らかに移る最速の速さを表します。
             </p>
             <p class="constant-history">
-              現代ではオイラーの公式や無限級数として鮮烈な姿を見せ、虚数単位と美しく結びついています。
+              微分・積分の基本定理では、e^x の導関数と積分が自らに戻るという奇跡があって、解析学とともにこの数が「微分の単位」を定めました。
+              オイラーの公式 e^{iθ} = cosθ + i sinθ の鋭い幾何学的直感は、円周（π）と成長（e）が複素平面で同じ呼吸をしている証拠です。
+            </p>
+            <p class="constant-history">
+              収束の速さを示す例としては、1/n! の級数や、連分数による表現があり、階乗の逆数が急速に減衰するのでわずかな項で多くの桁を確定できます。
+              その性質が計算機の内部では指数的な精度を保証し、金融、統計、シミュレーションの直感的エンジンとして不可欠です。
+            </p>
+            <p class="constant-history">
+              今日の機械学習でも指数関数は活性化や正規化に現れ、情報の重みを滑らかに整えてくれるその力は、まさに「成長のなめらかさ」を体現しています。
+              数値を並べるだけでなく、こうした構造を理解することがeの真の魅力なのです。
             </p>
             <pre class="constant-digits" id="eDigits" aria-label="ネイピア数の桁"></pre>
           </article>
@@ -1099,6 +1515,112 @@
             <p class="circle-ai-info" id="circleAiInfo">
               AIは対戦データを蓄積中。初期の探索ではランダムに打つこともあります。
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="calcGrid" class="panel calc-grid-panel">
+        <h2>計算マスで目標値を狙う</h2>
+        <p>
+          Pygameで作られた「計算マスゲーム」をブラウザ上に再構築しました。隣接するマスをクリックしながら演算を受け取り、
+          ランダムに提示される目標値を正確に作り上げてください。ギブアップすると最短経路が淡い赤で表示されます。
+        </p>
+        <div class="calc-grid-body">
+          <div id="calcGridBoard" class="calc-grid-board" role="grid" aria-label="計算マスの盤面"></div>
+          <div class="calc-grid-sidebar">
+            <div class="calc-grid-stats">
+              <div class="calc-stat-card">
+                <strong>現在値</strong>
+                <span id="calcCurrentValue">1</span>
+              </div>
+              <div class="calc-stat-card">
+                <strong>目標値</strong>
+                <span id="calcTargetValue">0</span>
+              </div>
+              <div class="calc-stat-card">
+                <strong>手数</strong>
+                <span id="calcStepCount">1</span>
+              </div>
+              <div class="calc-stat-card">
+                <strong>最少手</strong>
+                <span id="calcMinSteps">-</span>
+              </div>
+              <div class="calc-stat-card">
+                <strong>スコア</strong>
+                <span id="calcScore">0</span>
+              </div>
+            </div>
+            <div class="calc-grid-controls">
+              <button id="calcResetBoard" type="button">盤面リセット</button>
+              <button id="calcResetPath" type="button">スタートに戻る</button>
+              <button id="calcUndoStep" type="button">1手戻す</button>
+              <button id="calcGiveUp" type="button">ギブアップ</button>
+            </div>
+            <p class="calc-grid-message" id="calcGridMessage">
+              右や下へ進みながら演算を受け取り、狙った値に到達させましょう。移動は再訪禁止です。
+            </p>
+            <div class="calc-grid-alert" id="calcGridAlert" hidden></div>
+            <div class="calc-grid-legend" aria-label="マスの色の凡例">
+              <span class="calc-legend-item">
+                <span class="calc-legend-box calc-legend-start"></span>スタート
+              </span>
+              <span class="calc-legend-item">
+                <span class="calc-legend-box calc-legend-path"></span>現在の経路
+              </span>
+              <span class="calc-legend-item">
+                <span class="calc-legend-box calc-legend-best"></span>ギブアップ時の最短経路
+              </span>
+            </div>
+            <div class="calc-grid-history">
+              <div class="calc-history-section">
+                <span class="calc-history-title">現在の軌跡</span>
+                <ol id="calcPathHistory" class="calc-history-list" aria-live="polite"></ol>
+              </div>
+              <div class="calc-history-section">
+                <span class="calc-history-title">模範解答</span>
+                <ol id="calcSolutionHistory" class="calc-history-list" aria-live="polite"></ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="aliquot" class="panel">
+        <h2>アリコット数列で数の人格を観察する</h2>
+        <p>
+          与えられた自然数から真の約数（自分自身を除く約数）の和を取り続けると、数はやがて 0 に落ち着いたり、
+          完全数・友愛数・社交数のように巡回したりします。下のアニメーションで仕組みを眺めたあと、
+          任意の初項で実際に数列を生成してみましょう。
+        </p>
+        <div class="aliquot-body">
+          <div class="aliquot-animation">
+            <div class="aliquot-orbit" id="aliquotOrbit" aria-live="polite"></div>
+            <div class="aliquot-explanation">
+              <p id="aliquotExplanation">真の約数の和をたどると、複雑な軌跡でも必ずどこかへ導かれます。</p>
+              <ul id="aliquotDivisors" class="aliquot-divisors"></ul>
+            </div>
+            <button id="aliquotReplay" class="aliquot-replay" type="button" disabled>アニメーションを再生</button>
+          </div>
+          <div class="aliquot-controls">
+            <form id="aliquotForm" class="aliquot-form">
+              <label>
+                初項（自然数）
+                <input type="number" id="aliquotInput" min="1" step="1" value="12" required />
+              </label>
+              <button type="submit">数列を生成</button>
+              <button type="button" id="aliquotRandom">ランダム</button>
+            </form>
+            <div id="aliquotStatus" class="aliquot-status">
+              初項を入力して「数列を生成」を押すと、収束や巡回の様子が表示されます。
+            </div>
+            <div class="aliquot-sequence">
+              <h3>アリコット数列</h3>
+              <ol id="aliquotSequenceList" class="aliquot-sequence-list" aria-live="polite"></ol>
+            </div>
+            <div class="aliquot-sequence">
+              <h3>判定</h3>
+              <ul id="aliquotSummaryList" class="aliquot-sequence-list"></ul>
+            </div>
           </div>
         </div>
       </section>
@@ -2187,6 +2709,723 @@
       updateScoreboard();
       updateAiStatsDisplay();
       resetCircleGame();
+
+      // Calculation grid game
+      const calcGridBoard = document.getElementById('calcGridBoard');
+      const calcMessageEl = document.getElementById('calcGridMessage');
+      const calcAlertEl = document.getElementById('calcGridAlert');
+      const calcCurrentValueEl = document.getElementById('calcCurrentValue');
+      const calcTargetValueEl = document.getElementById('calcTargetValue');
+      const calcStepCountEl = document.getElementById('calcStepCount');
+      const calcMinStepsEl = document.getElementById('calcMinSteps');
+      const calcScoreEl = document.getElementById('calcScore');
+      const calcResetBoardButton = document.getElementById('calcResetBoard');
+      const calcResetPathButton = document.getElementById('calcResetPath');
+      const calcUndoButton = document.getElementById('calcUndoStep');
+      const calcGiveUpButton = document.getElementById('calcGiveUp');
+      const calcPathHistoryEl = document.getElementById('calcPathHistory');
+      const calcSolutionHistoryEl = document.getElementById('calcSolutionHistory');
+
+      const calcConfig = {
+        width: 12,
+        height: 10,
+        minTarget: 10,
+        maxTarget: 1000,
+        multipliers: [-4, -3, -2, -1, 1, 2, 3, 4],
+      };
+
+      const calcState = {
+        grid: [],
+        path: [],
+        currentValue: 1,
+        target: 0,
+        score: 0,
+        minSteps: null,
+        stageClear: false,
+        gaveUp: false,
+        shortestPath: [],
+        history: [],
+      };
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function generateCalcGrid() {
+        const grid = [];
+        for (let y = 0; y < calcConfig.height; y += 1) {
+          const row = [];
+          for (let x = 0; x < calcConfig.width; x += 1) {
+            if (y === 0 && x === 0) {
+              row.push('1');
+            } else {
+              const operators = ['+', '-', '*'];
+              const op = operators[Math.floor(Math.random() * operators.length)];
+              if (op === '*') {
+                const num = calcConfig.multipliers[Math.floor(Math.random() * calcConfig.multipliers.length)];
+                row.push(`*${num}`);
+              } else {
+                const num = randomInt(1, 9);
+                row.push(`${op}${num}`);
+              }
+            }
+          }
+          grid.push(row);
+        }
+        return grid;
+      }
+
+      function displayCalcOperation(opStr) {
+        return opStr.replace('*', '×');
+      }
+
+      function applyCalcOperation(value, operation) {
+        if (operation === '1') return value;
+        const op = operation[0];
+        const num = Number(operation.slice(1));
+        if (op === '+') return value + num;
+        if (op === '-') return value - num;
+        if (op === '*') return value * num;
+        return value;
+      }
+
+      function calculateCalcScore(playerSteps, minSteps) {
+        if (typeof minSteps !== 'number') return 0;
+        const diff = playerSteps - minSteps;
+        return Math.max(0, 100 - diff * 10);
+      }
+
+      function formatCalcCoordinate(row, col) {
+        const rowLabel = String.fromCharCode(65 + row);
+        return `${rowLabel}${col + 1}`;
+      }
+
+      function updateCalcHistoryList() {
+        calcPathHistoryEl.innerHTML = '';
+        if (!calcState.history.length) {
+          const placeholder = document.createElement('li');
+          placeholder.className = 'calc-history-empty';
+          placeholder.textContent = 'まだ移動していません。';
+          calcPathHistoryEl.appendChild(placeholder);
+          return;
+        }
+        calcState.history.forEach((entry, index) => {
+          const li = document.createElement('li');
+          const label = document.createElement('span');
+          label.textContent = `${index + 1}. ${formatCalcCoordinate(entry.coord[0], entry.coord[1])}`;
+          const detail = document.createElement('span');
+          detail.textContent =
+            entry.op === '1'
+              ? `開始 → ${entry.value}`
+              : `${displayCalcOperation(entry.op)} → ${entry.value}`;
+          li.appendChild(label);
+          li.appendChild(detail);
+          calcPathHistoryEl.appendChild(li);
+        });
+      }
+
+      function updateCalcSolutionList() {
+        calcSolutionHistoryEl.innerHTML = '';
+        if (!calcState.gaveUp) {
+          const placeholder = document.createElement('li');
+          placeholder.className = 'calc-history-empty';
+          placeholder.textContent = 'ギブアップすると模範経路が表示されます。';
+          calcSolutionHistoryEl.appendChild(placeholder);
+          return;
+        }
+        if (!calcState.shortestPath.length) {
+          const placeholder = document.createElement('li');
+          placeholder.className = 'calc-history-empty';
+          placeholder.textContent = 'この目標値に達するルートは見つかりませんでした。';
+          calcSolutionHistoryEl.appendChild(placeholder);
+          return;
+        }
+        let value = 1;
+        calcState.shortestPath.forEach(([row, col], index) => {
+          const li = document.createElement('li');
+          const label = document.createElement('span');
+          label.textContent = `${index + 1}. ${formatCalcCoordinate(row, col)}`;
+          const detail = document.createElement('span');
+          if (index === 0) {
+            detail.textContent = '開始 → 1';
+          } else {
+            const op = calcState.grid[row][col];
+            value = applyCalcOperation(value, op);
+            detail.textContent = `${displayCalcOperation(op)} → ${value}`;
+          }
+          li.appendChild(label);
+          li.appendChild(detail);
+          calcSolutionHistoryEl.appendChild(li);
+        });
+      }
+
+      function syncCalcValueAndHistory() {
+        const history = [];
+        let value = 1;
+        calcState.path.forEach(([row, col], index) => {
+          if (index === 0) {
+            history.push({ coord: [row, col], op: '1', value: 1 });
+            return;
+          }
+          const op = calcState.grid[row][col];
+          value = applyCalcOperation(value, op);
+          history.push({ coord: [row, col], op, value });
+        });
+        calcState.currentValue = value;
+        calcState.history = history;
+        updateCalcHistoryList();
+      }
+
+      function findCalcMinSteps(grid, target) {
+        const queue = [{ pos: [0, 0], value: 1, path: [[0, 0]] }];
+        let head = 0;
+        while (head < queue.length) {
+          const current = queue[head];
+          head += 1;
+          const [y, x] = current.pos;
+          if (current.value === target) {
+            return current.path.length;
+          }
+          const candidates = [
+            [y, x + 1],
+            [y + 1, x],
+            [y, x - 1],
+            [y - 1, x],
+          ];
+          candidates.forEach(([ny, nx]) => {
+            if (ny < 0 || ny >= calcConfig.height || nx < 0 || nx >= calcConfig.width) return;
+            if (current.path.some(([py, px]) => py === ny && px === nx)) return;
+            const nextValue = applyCalcOperation(current.value, grid[ny][nx]);
+            queue.push({
+              pos: [ny, nx],
+              value: nextValue,
+              path: current.path.concat([[ny, nx]]),
+            });
+          });
+        }
+        return null;
+      }
+
+      function findCalcMinPath(grid, target) {
+        const queue = [{ pos: [0, 0], value: 1, path: [[0, 0]] }];
+        let head = 0;
+        while (head < queue.length) {
+          const current = queue[head];
+          head += 1;
+          const [y, x] = current.pos;
+          if (current.value === target) {
+            return current.path;
+          }
+          const candidates = [
+            [y, x + 1],
+            [y + 1, x],
+            [y, x - 1],
+            [y - 1, x],
+          ];
+          candidates.forEach(([ny, nx]) => {
+            if (ny < 0 || ny >= calcConfig.height || nx < 0 || nx >= calcConfig.width) return;
+            if (current.path.some(([py, px]) => py === ny && px === nx)) return;
+            const nextValue = applyCalcOperation(current.value, grid[ny][nx]);
+            queue.push({
+              pos: [ny, nx],
+              value: nextValue,
+              path: current.path.concat([[ny, nx]]),
+            });
+          });
+        }
+        return [];
+      }
+
+      function setCalcMessage(text) {
+        calcMessageEl.textContent = text;
+      }
+
+      function showCalcAlert(text) {
+        calcAlertEl.textContent = text;
+        calcAlertEl.hidden = false;
+      }
+
+      function hideCalcAlert() {
+        calcAlertEl.hidden = true;
+        calcAlertEl.textContent = '';
+      }
+
+      function updateCalcHud() {
+        calcCurrentValueEl.textContent = calcState.currentValue;
+        calcTargetValueEl.textContent = calcState.target;
+        calcStepCountEl.textContent = calcState.path.length;
+        calcMinStepsEl.textContent = typeof calcState.minSteps === 'number' ? calcState.minSteps : '未到達';
+        calcScoreEl.textContent = calcState.score;
+        calcUndoButton.disabled = calcState.path.length <= 1 || calcState.stageClear || calcState.gaveUp;
+        calcGiveUpButton.disabled = calcState.stageClear || calcState.gaveUp;
+      }
+
+      function renderCalcGrid() {
+        if (!calcState.grid.length) {
+          calcGridBoard.innerHTML = '';
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        const pathSet = new Set(calcState.path.map(([py, px]) => `${py}-${px}`));
+        const shortestSet = new Set(
+          calcState.shortestPath.map(([py, px]) => `${py}-${px}`)
+        );
+        calcState.grid.forEach((row, y) => {
+          row.forEach((cell, x) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = displayCalcOperation(cell);
+            button.dataset.row = String(y);
+            button.dataset.col = String(x);
+            if (y === 0 && x === 0) {
+              button.classList.add('calc-cell-start');
+            } else if (pathSet.has(`${y}-${x}`)) {
+              button.classList.add('calc-cell-path');
+            } else if (calcState.gaveUp && shortestSet.has(`${y}-${x}`)) {
+              button.classList.add('calc-cell-best');
+            }
+            if (calcState.stageClear || calcState.gaveUp) {
+              button.disabled = true;
+            }
+            fragment.appendChild(button);
+          });
+        });
+        calcGridBoard.innerHTML = '';
+        calcGridBoard.appendChild(fragment);
+      }
+
+      function resetCalcGame(fullReset = true) {
+        if (fullReset || !calcState.grid.length) {
+          calcState.grid = generateCalcGrid();
+          calcState.target = randomInt(calcConfig.minTarget, calcConfig.maxTarget);
+          calcState.minSteps = findCalcMinSteps(calcState.grid, calcState.target);
+        }
+        calcState.path = [[0, 0]];
+        calcState.score = calculateCalcScore(calcState.path.length, calcState.minSteps);
+        calcState.stageClear = false;
+        calcState.gaveUp = false;
+        calcState.shortestPath = [];
+        calcState.history = [];
+        hideCalcAlert();
+        syncCalcValueAndHistory();
+        updateCalcSolutionList();
+        renderCalcGrid();
+        updateCalcHud();
+        setCalcMessage(
+          fullReset
+            ? '新しい盤面を生成しました。上下左右に1マスだけ移動できます。'
+            : 'スタート地点に戻りました。隣接するマスだけ辿れます。'
+        );
+      }
+
+      function handleCalcCellClick(row, col) {
+        if (calcState.stageClear) {
+          setCalcMessage('目標値に到達済みです。盤面をリセットして次のステージへ。');
+          return;
+        }
+        if (calcState.gaveUp) {
+          setCalcMessage('ギブアップ中です。盤面をリセットして再挑戦してください。');
+          return;
+        }
+        const last = calcState.path[calcState.path.length - 1];
+        const isAdjacent = Math.abs(row - last[0]) + Math.abs(col - last[1]) === 1;
+        const alreadyVisited = calcState.path.some(([py, px]) => py === row && px === col);
+        if (alreadyVisited) {
+          setCalcMessage('同じマスへは戻れません。別の方向を選びましょう。');
+          return;
+        }
+        if (!isAdjacent) {
+          setCalcMessage('移動できるのは上下左右に隣接したマスだけです。');
+          return;
+        }
+        calcState.path.push([row, col]);
+        syncCalcValueAndHistory();
+        calcState.score = calculateCalcScore(calcState.path.length, calcState.minSteps);
+        const reachedTarget = calcState.currentValue === calcState.target;
+        if (reachedTarget) {
+          calcState.stageClear = true;
+        }
+        renderCalcGrid();
+        updateCalcHud();
+        if (reachedTarget) {
+          showCalcAlert('🎉 目標値に到達しました。盤面リセットで次のステージへ進めます。');
+          setCalcMessage('おめでとうございます！ピッタリ同じ値になりました。');
+        } else {
+          setCalcMessage(`現在値は ${calcState.currentValue}。引き続き目標 ${calcState.target} を目指しましょう。`);
+        }
+      }
+
+      function undoCalcStep() {
+        if (calcState.stageClear) {
+          setCalcMessage('クリア済みです。盤面またはスタートに戻して再挑戦してください。');
+          return;
+        }
+        if (calcState.gaveUp) {
+          setCalcMessage('ギブアップ中は巻き戻せません。盤面をリセットしてください。');
+          return;
+        }
+        if (calcState.path.length <= 1) {
+          setCalcMessage('スタート地点からは戻せません。');
+          return;
+        }
+        calcState.path.pop();
+        syncCalcValueAndHistory();
+        calcState.score = calculateCalcScore(calcState.path.length, calcState.minSteps);
+        renderCalcGrid();
+        updateCalcHud();
+        setCalcMessage('一手戻しました。');
+      }
+
+      function handleCalcGiveUp() {
+        if (calcState.stageClear) {
+          setCalcMessage('既にクリアしました。盤面リセットで新しいターゲットに挑みましょう。');
+          return;
+        }
+        if (calcState.gaveUp) {
+          setCalcMessage('すでに最短経路を表示中です。盤面をリセットしてください。');
+          return;
+        }
+        calcState.gaveUp = true;
+        calcState.shortestPath = findCalcMinPath(calcState.grid, calcState.target);
+        if (calcState.shortestPath.length) {
+          showCalcAlert(`ギブアップ！最短経路を表示中（手数: ${calcState.shortestPath.length}）`);
+          setCalcMessage('淡い赤色のマスが最短経路です。盤面リセットで再挑戦できます。');
+        } else {
+          showCalcAlert('ギブアップしましたが、目標値への経路は見つかりませんでした。');
+          setCalcMessage('盤面をリセットして別の目標に挑みましょう。');
+        }
+        updateCalcSolutionList();
+        renderCalcGrid();
+        updateCalcHud();
+      }
+
+      calcGridBoard.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const row = Number(button.dataset.row);
+        const col = Number(button.dataset.col);
+        if (Number.isNaN(row) || Number.isNaN(col)) return;
+        handleCalcCellClick(row, col);
+      });
+
+      calcResetBoardButton.addEventListener('click', () => {
+        resetCalcGame(true);
+      });
+
+      calcResetPathButton.addEventListener('click', () => {
+        resetCalcGame(false);
+      });
+
+      calcUndoButton.addEventListener('click', undoCalcStep);
+      calcGiveUpButton.addEventListener('click', handleCalcGiveUp);
+      resetCalcGame(true);
+
+      // Aliquot sequence explorer
+      const aliquotForm = document.getElementById('aliquotForm');
+      const aliquotInput = document.getElementById('aliquotInput');
+      const aliquotRandomButton = document.getElementById('aliquotRandom');
+      const aliquotSequenceList = document.getElementById('aliquotSequenceList');
+      const aliquotSummaryList = document.getElementById('aliquotSummaryList');
+      const aliquotStatus = document.getElementById('aliquotStatus');
+      const aliquotOrbit = document.getElementById('aliquotOrbit');
+      const aliquotExplanation = document.getElementById('aliquotExplanation');
+      const aliquotDivisorsList = document.getElementById('aliquotDivisors');
+      const aliquotReplayButton = document.getElementById('aliquotReplay');
+
+      const ALIQUOT_TIMEOUT_MS = 20000;
+      const ALIQUOT_MAX_STEPS = 1400;
+      const ALIQUOT_HISTORY_LIMIT = 10;
+      let aliquotAnimationTimer = null;
+      let lastAliquotHistory = [];
+      let lastAliquotTokens = [];
+
+      function getProperDivisors(n) {
+        if (n <= 1) return [];
+        const divisors = [1];
+        const limit = Math.floor(Math.sqrt(n));
+        for (let i = 2; i <= limit; i += 1) {
+          if (n % i === 0) {
+            divisors.push(i);
+            const pair = n / i;
+            if (pair !== i && pair !== n) {
+              divisors.push(pair);
+            }
+          }
+        }
+        return divisors;
+      }
+
+      function classifyAliquot(result) {
+        if (result.timedOut) {
+          return {
+            label: 'タイムアウト',
+            description: '20秒以内に振る舞いを判定できませんでした。途中までの数列を表示しています。',
+          };
+        }
+        if (result.loopLength === 1) {
+          const value = result.repeatedCycle[0];
+          return {
+            label: '完全数',
+            description: `${value} は真の約数の和が自分自身に一致する完全数です。`,
+          };
+        }
+        if (result.loopLength === 2) {
+          return {
+            label: '友愛数',
+            description: `${result.repeatedCycle[0]} と ${result.repeatedCycle[1]} が互いに真の約数の和になっています。`,
+          };
+        }
+        if (result.loopLength >= 3) {
+          return {
+            label: '社交数',
+            description: `${result.loopLength} 個の数が巡回する社交数の輪を形成しています。`,
+          };
+        }
+        if (!result.loopLength && result.sequence[result.sequence.length - 1] === 0) {
+          return {
+            label: '収束',
+            description: '1 に到達したあと 0 へ落ち着くため、この数列は有限で停止します。',
+          };
+        }
+        return {
+          label: '未確定',
+          description: '未知の挙動です。別の初項でも試してみましょう。',
+        };
+      }
+
+      function buildAliquotSequence(start) {
+        const sequence = [start];
+        const seen = new Map([[start, 0]]);
+        const history = [];
+        let current = start;
+        let loopStartIndex = null;
+        let repeatedCycle = [];
+        let timedOut = false;
+        const startTime = performance.now();
+        while (current !== 1) {
+          const now = performance.now();
+          if (now - startTime > ALIQUOT_TIMEOUT_MS || sequence.length > ALIQUOT_MAX_STEPS) {
+            timedOut = true;
+            break;
+          }
+          const divisors = getProperDivisors(current);
+          const sum = divisors.reduce((acc, val) => acc + val, 0);
+          history.push({ value: current, divisors, sum });
+          current = sum;
+          if (seen.has(current)) {
+            loopStartIndex = seen.get(current);
+            repeatedCycle = sequence.slice(loopStartIndex);
+            sequence.push(current);
+            break;
+          }
+          sequence.push(current);
+          seen.set(current, sequence.length - 1);
+        }
+        if (!timedOut && loopStartIndex === null && current === 1) {
+          history.push({ value: 1, divisors: [], sum: 0 });
+          sequence.push(0);
+        }
+        const loopLength = repeatedCycle.length;
+        const classification = classifyAliquot({
+          timedOut,
+          loopLength,
+          repeatedCycle,
+          sequence,
+        });
+        return {
+          sequence,
+          history,
+          timedOut,
+          loopLength,
+          repeatedCycle,
+          loopStartIndex,
+          classification,
+        };
+      }
+
+      function buildAliquotTokens(result) {
+        const tokens = result.sequence.map((value, index) => {
+          const inCycle =
+            result.loopStartIndex !== null
+              ? index >= result.loopStartIndex && index < result.loopStartIndex + result.loopLength
+              : false;
+          return { type: 'value', value: String(value), isCycle: inCycle };
+        });
+        if (result.loopStartIndex !== null) {
+          tokens.splice(result.loopStartIndex, 0, { type: 'label', value: 'repeat part →' });
+          tokens.push({ type: 'ellipsis', value: '…' });
+        } else if (result.timedOut) {
+          tokens.push({ type: 'ellipsis', value: '…' });
+        }
+        return tokens;
+      }
+
+      function renderAliquotSequence(tokens) {
+        aliquotSequenceList.innerHTML = '';
+        if (!tokens.length) {
+          const placeholder = document.createElement('li');
+          placeholder.className = 'calc-history-empty';
+          placeholder.textContent = 'まだ数列を生成していません。';
+          aliquotSequenceList.appendChild(placeholder);
+          return;
+        }
+        tokens.forEach((token) => {
+          const item = document.createElement('li');
+          item.textContent = token.value;
+          if (token.type === 'label') {
+            item.style.background = 'rgba(255, 255, 255, 0.02)';
+            item.style.fontStyle = 'italic';
+            item.style.border = '1px dashed rgba(255, 255, 255, 0.2)';
+          }
+          if (token.type === 'ellipsis') {
+            item.style.fontWeight = '700';
+          }
+          if (token.isCycle) {
+            item.dataset.cycle = 'true';
+          }
+          aliquotSequenceList.appendChild(item);
+        });
+      }
+
+      function updateAliquotSummary(result) {
+        const { classification, loopLength, repeatedCycle, timedOut, sequence } = result;
+        aliquotSummaryList.innerHTML = '';
+        const summaryItems = [];
+        summaryItems.push(`${classification.label}`);
+        summaryItems.push(classification.description);
+        if (loopLength >= 2) {
+          summaryItems.push(`巡回の長さ: ${loopLength}`);
+        }
+        if (timedOut) {
+          summaryItems.push(`ここまでの生成数: ${sequence.length} 項`);
+        }
+        summaryItems.forEach((text) => {
+          const li = document.createElement('li');
+          li.textContent = text;
+          aliquotSummaryList.appendChild(li);
+        });
+        aliquotStatus.textContent = classification.description;
+      }
+
+      function renderAliquotOrbit(history) {
+        aliquotOrbit.innerHTML = '';
+        if (!history.length) {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'aliquot-node';
+          placeholder.textContent = '---';
+          aliquotOrbit.appendChild(placeholder);
+          return;
+        }
+        const limited = history.slice(0, ALIQUOT_HISTORY_LIMIT);
+        const fragment = document.createDocumentFragment();
+        limited.forEach((entry, index) => {
+          const node = document.createElement('div');
+          node.className = 'aliquot-node';
+          node.dataset.index = index;
+          node.textContent = entry.value;
+          fragment.appendChild(node);
+        });
+        aliquotOrbit.appendChild(fragment);
+      }
+
+      function updateDivisorsList(divisors) {
+        aliquotDivisorsList.innerHTML = '';
+        if (!divisors.length) {
+          const li = document.createElement('li');
+          li.textContent = '（なし）';
+          aliquotDivisorsList.appendChild(li);
+          return;
+        }
+        [...divisors]
+          .sort((a, b) => a - b)
+          .forEach((value) => {
+            const li = document.createElement('li');
+            li.textContent = value;
+            aliquotDivisorsList.appendChild(li);
+          });
+      }
+
+      function playAliquotAnimation() {
+        if (!lastAliquotHistory.length) return;
+        if (aliquotAnimationTimer) {
+          clearTimeout(aliquotAnimationTimer);
+        }
+        aliquotReplayButton.disabled = true;
+        const nodes = Array.from(aliquotOrbit.querySelectorAll('.aliquot-node'));
+        nodes.forEach((node) => node.classList.remove('aliquot-node--active'));
+        let index = 0;
+        const limitedHistory = lastAliquotHistory.slice(0, nodes.length);
+        const animationStep = () => {
+          nodes.forEach((node) => node.classList.remove('aliquot-node--active'));
+          const entry = limitedHistory[index];
+          if (!entry) {
+            aliquotReplayButton.disabled = false;
+            aliquotExplanation.textContent = 'アニメーションが完了しました。';
+            return;
+          }
+          const node = nodes[index];
+          if (node) {
+            node.classList.add('aliquot-node--active');
+          }
+          const divisorText =
+            entry.divisors.length > 0
+              ? `${entry.value} の真の約数 ${entry.divisors.length} 個を合計すると ${entry.sum} です。`
+              : `${entry.value} には真の約数がないので 0 になります。`;
+          aliquotExplanation.textContent = divisorText;
+          updateDivisorsList(entry.divisors);
+          index += 1;
+          if (index >= limitedHistory.length) {
+            aliquotReplayButton.disabled = false;
+            return;
+          }
+          aliquotAnimationTimer = setTimeout(animationStep, 1500);
+        };
+        animationStep();
+      }
+
+      function stopAliquotAnimation() {
+        if (aliquotAnimationTimer) {
+          clearTimeout(aliquotAnimationTimer);
+          aliquotAnimationTimer = null;
+        }
+        aliquotReplayButton.disabled = !lastAliquotHistory.length;
+      }
+
+      function runAliquotComputation(value) {
+        stopAliquotAnimation();
+        const result = buildAliquotSequence(value);
+        const tokens = buildAliquotTokens(result);
+        renderAliquotSequence(tokens);
+        updateAliquotSummary(result);
+        renderAliquotOrbit(result.history);
+        lastAliquotHistory = result.history;
+        lastAliquotTokens = tokens;
+        aliquotReplayButton.disabled = !result.history.length;
+        if (result.history.length) {
+          aliquotExplanation.textContent = '真の約数の和の流れをアニメーションできます。';
+          aliquotDivisorsList.innerHTML = '';
+        }
+      }
+
+      aliquotForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const value = Number(aliquotInput.value);
+        if (!Number.isInteger(value) || value < 1) {
+          aliquotStatus.textContent = '1以上の自然数を入力してください。';
+          return;
+        }
+        runAliquotComputation(value);
+      });
+
+      aliquotRandomButton.addEventListener('click', () => {
+        const randomValue = Math.floor(Math.random() * 500) + 2;
+        aliquotInput.value = randomValue;
+        runAliquotComputation(randomValue);
+      });
+
+      aliquotReplayButton.addEventListener('click', playAliquotAnimation);
+
+      runAliquotComputation(Number(aliquotInput.value));
 
       // initial setup
       initializeFractal();

@@ -380,6 +380,141 @@
         font-size: 0.9rem;
         color: #9ab4ff;
       }
+      #circleGame {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .circle-game {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .circle-board {
+        --board-size: 9;
+        position: relative;
+        min-width: 320px;
+        width: min(520px, 100%);
+        aspect-ratio: 1 / 1;
+        border-radius: 18px;
+        padding: 1rem;
+        background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 60%),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+          linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+        background-size: calc(100% / (var(--board-size) - 1)) calc(100% / (var(--board-size) - 1));
+        display: grid;
+        grid-template-columns: repeat(var(--board-size), 1fr);
+        grid-template-rows: repeat(var(--board-size), 1fr);
+        gap: 0;
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7), 0 30px 50px rgba(5, 8, 25, 0.7);
+      }
+      .circle-cell {
+        border: none;
+        background: transparent;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: transform 0.15s ease, opacity 0.2s ease;
+      }
+      .circle-cell::after {
+        content: "";
+        position: absolute;
+        inset: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        pointer-events: none;
+      }
+      .circle-cell .stone {
+        width: 58%;
+        height: 58%;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 12px rgba(0, 255, 255, 0.35);
+        transition: background 0.25s ease, box-shadow 0.25s ease;
+      }
+      .circle-cell[data-player="0"] .stone {
+        opacity: 0;
+        box-shadow: none;
+      }
+      .circle-cell[data-player="1"] .stone {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6));
+      }
+      .circle-cell[data-player="2"] .stone {
+        background: radial-gradient(circle, rgba(244, 90, 255, 0.85), rgba(244, 90, 255, 0.4));
+      }
+      .circle-cell.circle-cell--last {
+        transform: scale(1.05);
+      }
+      .circle-game-info {
+        flex: 1;
+        min-width: 240px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .circle-scoreboard {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+      .circle-scoreboard div {
+        padding: 0.9rem;
+        border-radius: 14px;
+        background: rgba(10, 26, 50, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+      }
+      .circle-scoreboard strong {
+        display: block;
+        font-size: 0.85rem;
+        letter-spacing: 0.2em;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 0.35rem;
+      }
+      .circle-scoreboard--wide {
+        grid-column: 1 / -1;
+      }
+      .circle-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .circle-controls label,
+      .circle-controls button {
+        font-size: 0.9rem;
+      }
+      .circle-controls select,
+      .circle-controls button {
+        appearance: none;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        color: inherit;
+        padding: 0.5rem 0.9rem;
+      }
+      .circle-controls button {
+        cursor: pointer;
+      }
+      .circle-message {
+        min-height: 2rem;
+        font-size: 0.95rem;
+        color: #cbe8ff;
+      }
+      .circle-ai-info {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0;
+      }
       @keyframes driftFormulas {
         0% {
           transform: translate(0%, 0%);
@@ -563,7 +698,50 @@
             <button id="autoSolve">自動で解く</button>
             <button id="resetHanoi">初期状態に戻す</button>
           </div>
-          <p class="message" id="hanoiMessage">自由な手でディスクを移してください。</p>
+      <p class="message" id="hanoiMessage">自由な手でディスクを移してください。</p>
+        </div>
+      </section>
+
+      <section id="circleGame" class="panel">
+        <h2>円を避ける碁盤の学習対戦</h2>
+        <p>
+          囲碁の交差点を舞台に、先攻と後攻が交互に石を置いてゆきます。既存の3点が描く円の円周上に
+          4点目を置くと失敗。AIは対戦の結果を蓄積しながら、ユーザーの選択を学習していきます。
+        </p>
+        <div class="circle-game">
+          <div id="circleBoard" class="circle-board" role="grid" aria-label="円を避けるゲームの碁盤"></div>
+          <div class="circle-game-info">
+            <div class="circle-scoreboard">
+              <div>
+                <strong>あなた</strong>
+                <span id="circleHumanScore">0 勝</span>
+              </div>
+              <div>
+                <strong>AI</strong>
+                <span id="circleAiScore">0 勝</span>
+              </div>
+              <div class="circle-scoreboard--wide">
+                <strong>引き分け</strong>
+                <span id="circleDraws">0 回</span>
+              </div>
+            </div>
+            <div class="circle-controls">
+              <label>
+                先攻
+                <select id="circleFirstPlayer">
+                  <option value="human">あなた</option>
+                  <option value="ai">AI</option>
+                </select>
+              </label>
+              <button type="button" id="circleReset">盤面をリセット</button>
+            </div>
+            <p class="circle-message" id="circleMessage">
+              線上に4点をつくらないように気をつけながら石を置いてください。
+            </p>
+            <p class="circle-ai-info" id="circleAiInfo">
+              AIは対戦データを蓄積中。初期の探索ではランダムに打つこともあります。
+            </p>
+          </div>
         </div>
       </section>
     </main>
@@ -704,7 +882,11 @@
       function drawSpiral(ctx, opts) {
         const { width, height, depth, scale, color, sliderAngle, branchFactor } = opts;
         ctx.strokeStyle = color;
-        ctx.lineWidth = 1.4;
+        ctx.lineWidth = 2.2;
+        const previousShadowBlur = ctx.shadowBlur;
+        const previousShadowColor = ctx.shadowColor;
+        ctx.shadowBlur = 16;
+        ctx.shadowColor = color;
         let x = width / 2;
         let y = height / 2;
         let length = Math.min(width, height) * (0.25 + scale * 0.3);
@@ -722,6 +904,8 @@
           length *= 0.92;
           currentAngle += (Math.PI / (22 + step)) + (branchFactor * 0.02) + Math.sin(step * 0.2) * 0.04;
         }
+        ctx.shadowBlur = previousShadowBlur;
+        ctx.shadowColor = previousShadowColor;
       }
 
       const fractalDrawers = {
@@ -759,6 +943,12 @@
         fractalDrawers[fractalType](ctx, options);
       }
 
+      function initializeFractal() {
+        updateControlLabels();
+        resizeCanvas();
+        renderFractal();
+      }
+
       const controlElements = [
         depthRange,
         angleRange,
@@ -783,9 +973,7 @@
 
       piDisplay.textContent = formatConstantDigits(piDigits);
       eDisplay.textContent = formatConstantDigits(eDigits);
-      updateControlLabels();
-      resizeCanvas();
-      renderFractal();
+      initializeFractal();
 
       // Hanoi towers
       const diskCountInput = document.getElementById('diskCount');
@@ -960,6 +1148,320 @@
       resetButton.addEventListener('click', () => {
         resetHanoi();
       });
+
+      // Circle avoidance game
+      const circleBoard = document.getElementById('circleBoard');
+      const circleMessage = document.getElementById('circleMessage');
+      const circleAiInfo = document.getElementById('circleAiInfo');
+      const circleHumanScoreEl = document.getElementById('circleHumanScore');
+      const circleAiScoreEl = document.getElementById('circleAiScore');
+      const circleDrawsEl = document.getElementById('circleDraws');
+      const circleFirstPlayer = document.getElementById('circleFirstPlayer');
+      const circleResetButton = document.getElementById('circleReset');
+      const circleBoardSize = 9;
+      const circleCells = [];
+      let circleBoardState = [];
+      let circleCurrentPlayer = 1;
+      let circleGameOver = false;
+      let circleLastMove = null;
+      let circleAiTimer = null;
+      let circleHumanWins = 0;
+      let circleAiWins = 0;
+      let circleDrawGames = 0;
+      let circleAiMoves = [];
+      const circleExperience = loadCircleExperience();
+
+      function loadCircleExperience() {
+        try {
+          const stored = localStorage.getItem('circleAvoidAI');
+          return stored ? JSON.parse(stored) : {};
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function saveCircleExperience() {
+        try {
+          localStorage.setItem('circleAvoidAI', JSON.stringify(circleExperience));
+        } catch (error) {
+          // ignore storage failures
+        }
+      }
+
+      function updateAiStatsDisplay() {
+        const entries = Object.values(circleExperience);
+        const total = entries.reduce((sum, entry) => sum + entry.total, 0);
+        const wins = entries.reduce((sum, entry) => sum + entry.wins, 0);
+        const rate = total ? Math.round((wins / total) * 100) : 0;
+        circleAiInfo.textContent = `学習エントリ ${entries.length} 件 / 勝率 ${rate}% / 訓練 ${total} 回`;
+      }
+
+      function buildCircleCells() {
+        circleCells.length = 0;
+        circleBoard.innerHTML = '';
+        for (let row = 0; row < circleBoardSize; row += 1) {
+          const rowCells = [];
+          for (let col = 0; col < circleBoardSize; col += 1) {
+            const cell = document.createElement('button');
+            cell.type = 'button';
+            cell.className = 'circle-cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.dataset.player = '0';
+            const stone = document.createElement('span');
+            stone.className = 'stone';
+            cell.appendChild(stone);
+            cell.addEventListener('click', () => handleCircleClick(row, col));
+            circleBoard.appendChild(cell);
+            rowCells.push(cell);
+          }
+          circleCells.push(rowCells);
+        }
+      }
+
+      function resetCircleGame() {
+        if (circleAiTimer) {
+          clearTimeout(circleAiTimer);
+          circleAiTimer = null;
+        }
+        circleAiMoves = [];
+        circleGameOver = false;
+        circleBoardState = Array.from({ length: circleBoardSize }, () =>
+          Array.from({ length: circleBoardSize }, () => 0)
+        );
+        circleLastMove = null;
+        circleCurrentPlayer = circleFirstPlayer.value === 'ai' ? 2 : 1;
+        renderCircleBoard();
+        circleMessage.textContent =
+          circleCurrentPlayer === 2
+            ? 'AIが先手で形を探ります…'
+            : 'あなたから打ち始めます。';
+        if (circleCurrentPlayer === 2) {
+          scheduleAiTurn();
+        }
+      }
+
+      function updateScoreboard() {
+        circleHumanScoreEl.textContent = `${circleHumanWins} 勝`;
+        circleAiScoreEl.textContent = `${circleAiWins} 勝`;
+        circleDrawsEl.textContent = `${circleDrawGames} 回`;
+      }
+
+      function renderCircleBoard() {
+        circleBoardState.forEach((row, rowIndex) => {
+          row.forEach((value, colIndex) => {
+            const cell = circleCells[rowIndex][colIndex];
+            cell.dataset.player = String(value);
+            const isLast =
+              circleLastMove &&
+              circleLastMove.row === rowIndex &&
+              circleLastMove.col === colIndex;
+            cell.classList.toggle('circle-cell--last', Boolean(isLast));
+          });
+        });
+      }
+
+      function isBoardFull() {
+        return circleBoardState.every((row) => row.every((cell) => cell !== 0));
+      }
+
+      function getBoardKey() {
+        return circleBoardState.map((row) => row.join('')).join('|');
+      }
+
+      function chooseAiMove(stateKey) {
+        const empties = [];
+        for (let row = 0; row < circleBoardSize; row += 1) {
+          for (let col = 0; col < circleBoardSize; col += 1) {
+            if (circleBoardState[row][col] === 0) {
+              const move = { row, col };
+              const loses = checkCircleLoss(row, col);
+              empties.push({ ...move, loses });
+            }
+          }
+        }
+        if (empties.length === 0) return null;
+        const safeMoves = empties.filter((option) => !option.loses);
+        const candidates = safeMoves.length ? safeMoves : empties;
+        if (Math.random() < 0.2) {
+          const pick = candidates[Math.floor(Math.random() * candidates.length)];
+          return { row: pick.row, col: pick.col, moveKey: `${stateKey}|${pick.row},${pick.col}` };
+        }
+        let best = null;
+        let bestScore = -Infinity;
+        const centerCoord = (circleBoardSize - 1) / 2;
+        candidates.forEach((move) => {
+          const moveKey = `${stateKey}|${move.row},${move.col}`;
+          const record = circleExperience[moveKey];
+          const baseRate = record && record.total ? record.wins / record.total : 0.33;
+          const novelty = 1 - Math.min(1, (record?.total ?? 0) / 10);
+          const distanceScore =
+            -Math.hypot(move.row - centerCoord, move.col - centerCoord) * 0.035;
+          const score = baseRate + novelty * 0.18 + distanceScore;
+          if (score > bestScore) {
+            bestScore = score;
+            best = { row: move.row, col: move.col, moveKey };
+          }
+        });
+        if (!best) {
+          const fallback = candidates[Math.floor(Math.random() * candidates.length)];
+          return { row: fallback.row, col: fallback.col, moveKey: `${stateKey}|${fallback.row},${fallback.col}` };
+        }
+        return best;
+      }
+
+      function scheduleAiTurn() {
+        if (circleGameOver) return;
+        if (circleAiTimer) {
+          clearTimeout(circleAiTimer);
+          circleAiTimer = null;
+        }
+        circleMessage.textContent = 'AIが読みを進めています…';
+        circleAiTimer = setTimeout(() => {
+          circleAiTimer = null;
+          if (circleGameOver) return;
+          const stateKey = getBoardKey();
+          const move = chooseAiMove(stateKey);
+          if (!move) {
+            finalizeCircleGame('draw', 'これ以上打てる場所がありません。');
+            return;
+          }
+          circleAiMoves.push(move.moveKey);
+          makeCircleMove(move.row, move.col, 2);
+        }, 560);
+      }
+
+      function finalizeCircleGame(outcome, message) {
+        circleGameOver = true;
+        if (circleAiTimer) {
+          clearTimeout(circleAiTimer);
+          circleAiTimer = null;
+        }
+        if (outcome === 'human') {
+          circleHumanWins += 1;
+        } else if (outcome === 'ai') {
+          circleAiWins += 1;
+        } else {
+          circleDrawGames += 1;
+        }
+        updateScoreboard();
+        circleMessage.textContent = message;
+        learnFromExperience(outcome === 'ai');
+      }
+
+      function learnFromExperience(aiWon) {
+        if (!circleAiMoves.length) {
+          updateAiStatsDisplay();
+          return;
+        }
+        circleAiMoves.forEach((moveKey) => {
+          const record = circleExperience[moveKey] || { wins: 0, total: 0 };
+          record.total += 1;
+          if (aiWon) {
+            record.wins += 1;
+          }
+          circleExperience[moveKey] = record;
+        });
+        circleAiMoves = [];
+        saveCircleExperience();
+        updateAiStatsDisplay();
+      }
+
+      function makeCircleMove(row, col, player) {
+        const loses = checkCircleLoss(row, col);
+        circleBoardState[row][col] = player;
+        circleLastMove = { row, col };
+        renderCircleBoard();
+        if (loses) {
+          const winner = player === 1 ? 'ai' : 'human';
+          const reason =
+            player === 1
+              ? 'あなたは円の円周上に4点を作ってしまいました。'
+              : 'AIが円上に4点を置いてしまいました。';
+          finalizeCircleGame(winner, reason);
+          return;
+        }
+        if (isBoardFull()) {
+          finalizeCircleGame('draw', '盤面がすべて埋まりました。');
+          return;
+        }
+        circleCurrentPlayer = player === 1 ? 2 : 1;
+        circleMessage.textContent =
+          circleCurrentPlayer === 2
+            ? 'AIの番です。'
+            : 'あなたの番です。円上の4点を避けてください。';
+        if (circleCurrentPlayer === 2) {
+          scheduleAiTurn();
+        }
+      }
+
+      function handleCircleClick(row, col) {
+        if (circleGameOver || circleCurrentPlayer !== 1) {
+          return;
+        }
+        if (circleBoardState[row][col] !== 0) {
+          circleMessage.textContent = 'そこにはすでに石があります。';
+          return;
+        }
+        makeCircleMove(row, col, 1);
+      }
+
+      function checkCircleLoss(row, col) {
+        const existingStones = [];
+        for (let r = 0; r < circleBoardSize; r += 1) {
+          for (let c = 0; c < circleBoardSize; c += 1) {
+            if (circleBoardState[r][c]) {
+              existingStones.push({ x: c, y: r });
+            }
+          }
+        }
+        if (existingStones.length < 3) return false;
+        const newPoint = { x: col, y: row };
+        const tolerance = 0.04;
+        for (let i = 0; i < existingStones.length - 2; i += 1) {
+          for (let j = i + 1; j < existingStones.length - 1; j += 1) {
+            for (let k = j + 1; k < existingStones.length; k += 1) {
+              const circle = computeCircle(existingStones[i], existingStones[j], existingStones[k]);
+              if (!circle) continue;
+              const diff = Math.abs(distance(circle.center, newPoint) - circle.radius);
+              if (diff < tolerance) {
+                return true;
+              }
+            }
+          }
+        }
+        return false;
+      }
+
+      function computeCircle(p1, p2, p3) {
+        const d =
+          2 *
+          (p1.x * (p2.y - p3.y) +
+            p2.x * (p3.y - p1.y) +
+            p3.x * (p1.y - p2.y));
+        if (Math.abs(d) < 1e-6) return null;
+        const aSq = p1.x * p1.x + p1.y * p1.y;
+        const bSq = p2.x * p2.x + p2.y * p2.y;
+        const cSq = p3.x * p3.x + p3.y * p3.y;
+        const ux =
+          (aSq * (p2.y - p3.y) + bSq * (p3.y - p1.y) + cSq * (p1.y - p2.y)) / d;
+        const uy =
+          (aSq * (p3.x - p2.x) + bSq * (p1.x - p3.x) + cSq * (p2.x - p1.x)) / d;
+        const center = { x: ux, y: uy };
+        const radius = distance(center, p1);
+        return Number.isFinite(radius) ? { center, radius } : null;
+      }
+
+      function distance(p1, p2) {
+        return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+      }
+
+      circleFirstPlayer.addEventListener('change', resetCircleGame);
+      circleResetButton.addEventListener('click', resetCircleGame);
+      buildCircleCells();
+      updateScoreboard();
+      updateAiStatsDisplay();
+      resetCircleGame();
 
       // initial setup
       initializeFractal();
